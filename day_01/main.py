@@ -1,4 +1,5 @@
 
+
 if __name__ == "__main__":
     with open('input.txt') as file:
         lines = file.read();
@@ -10,7 +11,6 @@ if __name__ == "__main__":
     list_of_sums = []
     for y in list_of_lists:
         list_of_sums.append(sum(y))
-
 
     sorted = sorted(list_of_sums);
 
