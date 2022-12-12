@@ -3,7 +3,6 @@ from collections import defaultdict
 directory_stack = []
 dirs = defaultdict(list)
 files = defaultdict(list)
-dirs_with_sizes = defaultdict(int)
 
 
 class FileDto:
@@ -18,10 +17,10 @@ class FileDto:
         return self.size
 
 
-def setup_commands() -> []:
+def setup_commands(filename: str) -> []:
     result = []
 
-    with open('input.txt') as file:
+    with open(filename) as file:
         lines = file.read().splitlines();
 
     for line in lines:
@@ -60,16 +59,17 @@ def process_ls_command(inputs) -> None:
         type_or_size = line.split(" ")[0]
         name = line.split(" ")[1]
 
+        full_path = "/".join(directory_stack)
         if type_or_size == "dir":
-            dirs[directory_stack[-1]].append(name)
+            dirs[full_path].append(full_path + "/" + name)
         else:
-            files[directory_stack[-1]].append(FileDto(name, int(type_or_size)))
+            files[full_path].append(FileDto(name, int(type_or_size)))
 
 
 def calculate_size_of_directory(input_directory: str):
-    # print(input_directory)
-    if input_directory in dirs_with_sizes:
-        return dirs_with_sizes[input_directory]
+
+    # if input_directory in dirs_with_sizes:
+    #     return dirs_with_sizes[input_directory]
 
     result = 0;
     for file in files[input_directory]:
@@ -78,7 +78,7 @@ def calculate_size_of_directory(input_directory: str):
     for sub_dir in dirs[input_directory]:
         result += calculate_size_of_directory(sub_dir)
 
-    dirs_with_sizes[input_directory] = result
+    # dirs_with_sizes[input_directory] = result
 
     return result;
 
@@ -93,7 +93,7 @@ def get_all_directories() -> set:
     return result
 
 
-def show_answer() -> int:
+def show_answer_one() -> int:
     result = 0;
     for directory in get_all_directories():
         size = calculate_size_of_directory(directory)
@@ -104,15 +104,33 @@ def show_answer() -> int:
     return result
 
 
+def show_answer_two() -> int:
+    jobber = {}
+    for directory in get_all_directories():
+        size = calculate_size_of_directory(directory)
+        jobber[directory] = size
+    values_in_order = sorted(jobber.values())
+
+    space_free = 70000000 - values_in_order[-1]
+
+    for file_size in values_in_order:
+        if space_free + file_size > 30000000:
+            return file_size
+            break
+
+    # print("jobber:", values_in_order)
+    #
+    # print(jobber)
+
+    # return -1
+
+
 if __name__ == "__main__":
-    commands = setup_commands()
+    commands = setup_commands('input.txt')
     for cmd in commands:
         process_command(cmd)
 
-    print(dirs)
-    print(files)
-    print(get_all_directories())
-    print(dirs_with_sizes)
-    print("answer:", show_answer())
+    print("answer one: ", show_answer_one())
+    print("answer two: ", show_answer_two())
 
 
