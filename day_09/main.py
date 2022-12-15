@@ -129,7 +129,7 @@ if __name__ == "__main__":
 
     tail_trail = [copy.copy(tail_positions[-1])]
 
-    commands = ObjectMother("input.txt").return_list(DataWrapper.factory);
+    commands = ObjectMother("input.txt").return_list(DataWrapper.factory)
 
     for command in commands:
         process_command(command)
