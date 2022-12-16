@@ -1,18 +1,16 @@
 from utils.objectmother import ObjectMother
-from utils.datawrapper import DataWrapper
-
-
-class MonkeyDataWrapper (DataWrapper):
-    @staticmethod
-    def factory(data):
-        return DataWrapper(data)
-
-    def get_command(self) -> int:
-        return self.data.split(" ")[0]
-
-    def get_value(self) -> int:
-        return int(self.data.split(" ")[1])
+from monkey import Monkey
+from monkey import MonkeyDataWrapper
 
 
 if __name__ == "__main__":
-    monkeys = ObjectMother("input_test.txt").return_list(MonkeyDataWrapper.factory)
+    monkeys_data = ObjectMother("input_test.txt").return_list_of_multi_line_objects(MonkeyDataWrapper.factory, "Monkey")
+
+    monkeys = []
+    for monkey_data in monkeys_data:
+        monkeys.append(Monkey(monkey_data.get_name(), monkey_data.get_starting_items(), monkey_data.get_operation(), monkey_data.get_test()))
+
+    print(monkeys)
+    print(monkeys[0].get_operation())
+    print(monkeys[0].get_test())
+
