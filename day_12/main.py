@@ -12,11 +12,12 @@
 #
 #
 from collections import deque
-
+import string
 
 def fewest_steps(grid, start, goal):
     rows = len(grid)
     cols = len(grid[0])
+    letters_a_to_z = string.ascii_lowercase
 
     # Create a 2D array to keep track of visited nodes
     visited = [[False for _ in range(cols)] for _ in range(rows)]
@@ -43,18 +44,39 @@ def fewest_steps(grid, start, goal):
 
             # Add the unvisited neighbors of the node to the queue
             for r, c in [(row-1, col), (row+1, col), (row, col-1), (row, col+1)]:
-                if 0 <= r < rows and 0 <= c < cols and not visited[r][c] and grid[r][c] != '#':
-                    queue.append((r, c))
-                    visited[r][c] = True
+                if 0 <= r < rows and 0 <= c < cols and not visited[r][c]:
+                    a = letters_a_to_z.index(grid[r][c])
+                    b = letters_a_to_z.index(grid[row][col]) + 1
+                    if a <= b:
+                        queue.append((r, c))
+                        visited[r][c] = True
 
     # Return -1 if the goal is not reached
     return -1
 
 
 if __name__ == "__main__":
-    grid = ["Sabqponm", "abcryxxl", "accszExk", "acctuvwj", "abdefghi"]
+
+    with open("input_test.txt", "r") as filename:
+        grid = filename.read().splitlines()
+    print(grid)
+    print(str(enumerate(grid)))
+
     start = (0, 0)
     goal = (2, 5)
 
-    steps = fewest_steps(grid, start, goal)
-    print(steps)
+    # steps = fewest_steps(grid, start, goal)
+    # print(steps)
+
+
+# Here is one way you could find the x, y coordinates of the character E in the given collection:
+#
+# Copy code
+# collection = ['Sabqponm', 'abcryxxl', 'accszExk', 'acctuvwj', 'abdefghi']
+#
+# for y, row in enumerate(collection):
+#     if 'E' in row:
+#         x = row.index('E')
+#         break
+#
+# print(f"The character E is located at x = {x}, y = {y}")
