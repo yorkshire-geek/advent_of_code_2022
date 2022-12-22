@@ -1,72 +1,101 @@
-# From Chat GPT
-#
-# To solve this problem, you can use a search algorithm such as breadth-first search (BFS). BFS is an algorithm that allows you to explore the nodes of a graph in a breadth-first manner, meaning that it visits all the nodes at a given depth level before moving on to the next depth level.
-# Here's how you can apply BFS to solve this problem:
-# Create a queue to store the nodes that need to be visited. Initially, the queue should contain only the starting node (S).
-# While the queue is not empty, do the following:
-# Pop the first node from the queue and mark it as visited.
-# If the node is the goal (E), return the number of steps it took to reach the goal.
-# Otherwise, add the unvisited neighbors of the node to the queue. The neighbors should be added in the order up, down, left, right.
-# If the goal is not reached, return -1 to indicate that it is not possible to reach the goal.
-# Here's some example code in Python that implements the above approach:
-#
-#
 from collections import deque
 import string
+import networkx as nx
 
-def fewest_steps(grid, start, goal):
+LETTERS_A_TO_Z = string.ascii_lowercase
+
+
+def find_char(collection: (), char_to_find: chr) -> ():
+    for r, row in enumerate(collection):
+        if char_to_find in row:
+            c = row.index(char_to_find)
+            break
+    return r, c
+
+
+def char_replace(collection: (), char_from: chr, char_to: chr):
+    for n, jobber in enumerate(collection):
+        if char_from in jobber:
+            collection[n] = jobber.replace(char_from, char_to)
+
+
+# Graph comes in the format [row][col]
+# so 2 rows, 3 cols
+#   abc
+#   def
+# grid[0][0] = d, grid[0][1] = e, grid[0][2] = f,  grid[1][0] = a, grid[1][1] = b, grid[1][2] = c
+#
+def setup_graphs(grid: ()):
+
     rows = len(grid)
     cols = len(grid[0])
-    letters_a_to_z = string.ascii_lowercase
 
-    # Create a 2D array to keep track of visited nodes
-    visited = [[False for _ in range(cols)] for _ in range(rows)]
+    start = find_char(grid, 'S')
+    end = find_char(grid, 'E')
 
-    # Initialize the queue with the starting node
-    queue = deque([start])
-    visited[start[0]][start[1]] = True
+    char_replace(grid, 'S', 'a')
+    char_replace(grid, 'E', 'z')
 
-    # Initialize the number of steps to 0
-    steps = 0
+    # visited = [[False for _ in range(cols)] for _ in range(rows)]
 
-    # BFS loop
-    while queue:
-        # Increment the number of steps
-        steps += 1
+    print(grid)
+    graph = nx.DiGraph()
+    for row in range(rows):
+        for col in range(cols):
+            for r, c in [(row - 1, col), (row + 1, col), (row, col - 1), (row, col + 1)]:
+                if 0 <= r < rows and 0 <= c < cols:
+                    source_height = LETTERS_A_TO_Z.index(grid[row][col])
+                    destination_height = LETTERS_A_TO_Z.index(grid[r][c]) - 1
+                    if destination_height <= source_height:
+                        graph.add_edge((row, col), (r, c))
 
-        # Process all the nodes in the current depth level
-        for _ in range(len(queue)):
-            row, col = queue.popleft()
+    print(graph)
+    jobber = nx.shortest_path(graph, start, end)
+    print(jobber)
+    print(len(jobber))
 
-            # Check if the node is the goal
-            if grid[row][col] == 'E':
-                return steps
+#             if 0 <= r < rows and 0 <= c < cols and not visited[r][c]:
 
-            # Add the unvisited neighbors of the node to the queue
-            for r, c in [(row-1, col), (row+1, col), (row, col-1), (row, col+1)]:
-                if 0 <= r < rows and 0 <= c < cols and not visited[r][c]:
-                    a = letters_a_to_z.index(grid[r][c])
-                    b = letters_a_to_z.index(grid[row][col]) + 1
-                    if a <= b:
-                        queue.append((r, c))
-                        visited[r][c] = True
-
-    # Return -1 if the goal is not reached
-    return -1
+    #
+    # # Initialize the queue with the starting node
+    # queue = deque([start])
+    # visited[start[0]][start[1]] = True
+    #
+    # # Initialize the number of steps to 0
+    # steps = 0
+    #
+    # # BFS loop
+    # while queue:
+    #     # Increment the number of steps
+    #     steps += 1
+    #
+    #     # Process all the nodes in the current depth level
+    #     for _ in range(len(queue)):
+    #         row, col = queue.popleft()
+    #
+    #         # Check if the node is the goal
+    #         if grid[row][col] == 'E':
+    #             return steps
+    #
+    #         # Add the unvisited neighbors of the node to the queue
+    #         for r, c in [(row-1, col), (row+1, col), (row, col-1), (row, col+1)]:
+    #             if 0 <= r < rows and 0 <= c < cols and not visited[r][c]:
+    #                 a = letters_a_to_z.index(grid[r][c])
+    #                 b = letters_a_to_z.index(grid[row][col]) + 1
+    #                 if a <= b:
+    #                     queue.append((r, c))
+    #                     visited[r][c] = True
+    #
+    # # Return -1 if the goal is not reached
+    # return -1
 
 
 if __name__ == "__main__":
 
-    with open("input_test.txt", "r") as filename:
-        grid = filename.read().splitlines()
-    print(grid)
-    print(str(enumerate(grid)))
+    with open("input.txt", "r") as filename:
+        input_grid = filename.read().splitlines()
 
-    start = (0, 0)
-    goal = (2, 5)
-
-    # steps = fewest_steps(grid, start, goal)
-    # print(steps)
+    setup_graphs(input_grid[::-1])
 
 
 # Here is one way you could find the x, y coordinates of the character E in the given collection:
